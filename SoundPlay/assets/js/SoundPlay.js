@@ -1,9 +1,114 @@
-function onKeyDown(event) {
-    var myCircle = new Path.Circle(new Point(Math.random()*view.size.width, Math.random()*view.size.height), Math.random()*100);
+var faders = [];
+
+function randomPoint(){
+    return new Point(Math.random()*view.size.width, Math.random()*view.size.height);
+}
+
+function randomRadius(){
+    return Math.random()*500;
+}
+
+function randomColor(){
     var red=Math.random()*255;
     var green=Math.random()*255;
     var blue=Math.random()*255;
     var opacity=Math.random();
-    var colorStr = "rgba("+red+", "+green+", "+blue+", "+opacity+")";
-    myCircle.fillColor = colorStr;
+    return "rgba("+red+", "+green+", "+blue+", "+opacity+")";
+}
+
+function randomSpeed(){
+    return .9 + Math.random()/10 + Math.random()/100;
+}
+
+function keyObjects(){
+    var keys = {
+        q: {
+            path: new Path.Circle(randomPoint(),randomRadius()),
+            sound: new Howl({
+                src: ['sound/A/bubbles.mp3']
+            })
+        },
+        w: {
+            path: new Path.RegularPolygon(randomPoint(), 3, randomRadius()),
+            sound: new Howl({
+                src: ['sound/A/clay.mp3']
+            }) 
+        },
+        e: {
+            path: new Path.RegularPolygon(randomPoint(), 4, randomRadius()),
+            sound: new Howl({
+                src: ['sound/A/confetti.mp3']
+            }) 
+        },
+        r: {
+            path: new Path.RegularPolygon(randomPoint(), 5, randomRadius()),
+            sound: new Howl({
+                src: ['sound/A/corona.mp3']
+            }) 
+        },
+        t: {
+            path: new Path.RegularPolygon(randomPoint(), 6, randomRadius()),
+            sound: new Howl({
+                src: ['sound/A/dotted-spiral.mp3']
+            }) 
+        },
+        y: {
+            path: new Path.RegularPolygon(randomPoint(), 7, randomRadius()),
+            sound: new Howl({
+                src: ['sound/A/flash-1.mp3']
+            }) 
+        },
+        u: {
+            path: new Path.RegularPolygon(randomPoint(), 8, randomRadius()),
+            sound: new Howl({
+                src: ['sound/A/flash-2.mp3']
+            }) 
+        },
+        i: {
+            path: new Path.RegularPolygon(randomPoint(), 9, randomRadius()),
+            sound: new Howl({
+                src: ['sound/A/flash-3.mp3']
+            }) 
+        },
+        o: {
+            path: new Path.RegularPolygon(randomPoint(), 10, randomRadius()),
+            sound: new Howl({
+                src: ['sound/A/glimmer.mp3']
+            }) 
+        },
+        p: {
+            path: new Path.RegularPolygon(randomPoint(), 11, randomRadius()),
+            sound: new Howl({
+                src: ['sound/A/moon.mp3']
+            }) 
+        }
+    }
+    return  keys;  
+}
+
+function onKeyDown(event) {
+    var keys = keyObjects();
+
+    if(keys[event.key]){
+        var myPath = keys[event.key].path;
+    
+        myPath.fillColor = randomColor();
+    
+        faders.push(myPath);
+
+        keys[event.key].sound.play();
+    }
+    
+}
+
+function onFrame(event) {
+    for(var i=0; i<faders.length; ++i){
+        faders[i].fillColor.hue += 1;
+        faders[i].scale(randomSpeed());
+        if(faders[i].area < 1){
+            faders[i].remove(); 
+            faders.splice(i, 1); 
+          }
+    }
+
 }
